@@ -69,7 +69,7 @@ class S(BaseHTTPRequestHandler):
         obj = json.loads(post_data)
         response["score"] = []
         for addr in obj['addresses']:
-            response["score"].append( {"address" : addr, "score" : "1"} )
+            response["score"].append( {"address" : addr, "score" : "60"} )
 
         self._set_response()
         self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
