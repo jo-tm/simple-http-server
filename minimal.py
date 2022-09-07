@@ -64,7 +64,7 @@ class S(BaseHTTPRequestHandler):
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
 
-        post_data = example_req
+        #post_data = example_req
         print(post_data)
         obj = json.loads(post_data)
         response["score"] = []
