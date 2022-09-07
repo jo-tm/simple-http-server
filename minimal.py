@@ -47,6 +47,9 @@ response = {
   "score": []
 }
 
+def voting_power(addr):
+    return str(1)
+
 class S(BaseHTTPRequestHandler):
     def _set_response(self):
         self.send_response(200)
@@ -64,12 +67,14 @@ class S(BaseHTTPRequestHandler):
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
 
-        #post_data = example_req
-        print(post_data)
-        obj = json.loads(post_data)
-        response["score"] = []
-        for addr in obj['addresses']:
-            response["score"].append( {"address" : addr, "score" : "1"} )
+        print("PATH: " + self.path)
+        if self.path == "/voting-power":
+            #post_data = example_req
+            print(post_data)
+            obj = json.loads(post_data)
+            response["score"] = []
+            for addr in obj['addresses']:
+                response["score"].append( {"address" : addr, "score" : voting_power(addr)} )
 
         self._set_response()
         self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
