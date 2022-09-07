@@ -72,7 +72,7 @@ class S(BaseHTTPRequestHandler):
             response["score"].append( {"address" : addr, "score" : "1"} )
 
         self._set_response()
-        self.wfile.write(json.dumps(response).encode('utf-8'))
+        self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
         #self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
 def run(server_class=HTTPServer, handler_class=S, port=8000):
