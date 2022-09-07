@@ -11,7 +11,7 @@ import logging, json
 example_req = '''
 {
   "options":     {
-        "api": "https://dao-staging.polychainmonsters.com/v1/votingPowerTestMock",
+        "api": "https://test-url.for-snapshot.com:8000",
         "symbol": "BIT",
         "decimals": 0
         },
@@ -69,7 +69,7 @@ class S(BaseHTTPRequestHandler):
         obj = json.loads(post_data)
         response["score"] = []
         for addr in obj['addresses']:
-            response["score"].append( {"address" : addr, "score" : "60"} )
+            response["score"].append( {"address" : addr, "score" : "1"} )
 
         self._set_response()
         self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
