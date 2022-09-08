@@ -53,7 +53,7 @@ response = {
 mass_delegate_req = '''
 {
   "network": "1",
-  "delegator": "0xdededededededededededededededededededede"
+  "delegator": "0xdededededededededededededededededededede",
   "delegatees": [
         {
             "address" : "0xdededededededededededededededededededede",
@@ -80,7 +80,9 @@ mass_delegate_req = '''
             "weight" : "1"
         }
   ],
-  "snapshot": 11437846
+  "total_weight" : "100",
+  "snapshot": 11437846,
+  "permit" : "SIGNATURE TO BE INCLUDED"
 }
 '''
 
@@ -89,6 +91,7 @@ def balance_of_erc20(addr):
     infura_url = "https://rinkeby.infura.io/v3/890b63f3265f4331ae435bef1c0869b8"
     web3 = Web3(Web3.HTTPProvider(infura_url))
     abi=json.loads(myabi)
+    # MINT contract
     address = "0xa63C6E2Af9c87768f741E1BB7f77511d23152C7B"
     contract = web3.eth.contract(address=address, abi=abi)
     totalSupply = contract.functions.totalSupply().call()
@@ -96,6 +99,8 @@ def balance_of_erc20(addr):
     #print(contract.functions.name().call())
     #print(contract.functions.symbol().call())
     address2 = Web3.toChecksumAddress(addr)
+    # use getPriorVotes() for BIT token
+    # function getPriorVotes(address account, uint256 blockNumber) public view returns (uint256)
     balance = contract.functions.balanceOf(address2).call()
     #print(balance)
     int_balance = (balance) // 10**18
@@ -104,6 +109,20 @@ def balance_of_erc20(addr):
 
 def voting_power(addr):
     return str(1)
+
+# 1. UserA has 10,000 MINT
+# 2. UserB has 5,000 MINT
+# 3. UserA make a proposal PropA.
+# 4. UserA votes YES and UserB votes NO on PropA. Win YES
+# 5. UserA does mass-delegation with weight 6 self-delegate and 4 mass delegate to UserB.
+# 6. UserA has net voting power 6,000 MINT.
+# 7. UserB has net voting power 9,000 MINT
+# 8. UserA make a proposal PropB.
+# 9. UserA votes YES and UserB votes NO on PropA. Win No.
+# 10. UserA does mass-delegation with weight 1 self-delegate.
+# 8. UserA make a proposal PropC.
+# 9. UserA votes YES and UserB votes NO on PropA. Win YES.
+
 
 class S(BaseHTTPRequestHandler):
 
@@ -120,22 +139,50 @@ class S(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
+    def update_mass_delegate(self, obj):
+        delegator = obj['delegator']
+        block_number = obj["snapshot"]
+        #TODO: check signature from permit, signer=delegator
+        prev_list = []
+        num_delegatees = 0
+        if not delegator in self._delegators:
+            self._delegators[delegator] = []
+        else: # prev list
+            prev_list = [dic['address'] for dic in self._delegators[delegator][-1]['delegatees'] ]
+        self._delegators[delegator].append( obj )
+
+        for delegatee in obj['delegatees']:
+            delegatee_addr = delegatee['address']
+            if not delegatee_addr in self._delegatees:
+                self._delegatees[delegatee_addr] = []
+            # block_number, delegator address, delegatee weight
+            self._delegatees[delegatee_addr].append((block_number,delegator,int(delegatee['weight'])))
+            num_delegatees += 1
+        # missing delegatees from prev list must get zero weight.
+        for prev_delegatee in prev_list:
+            self._delegatees[delegatee_addr].append((block_number,delegator,0))
+        return num_delegatees, delegator
+            
+
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
         post_data = self.rfile.read(content_length) # <--- Gets the data itself
         logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
                 str(self.path), str(self.headers), post_data.decode('utf-8'))
 
+        #post_data = example_req
+        print(post_data)
+        obj = json.loads(post_data)
+
         print("PATH: " + self.path)
+        response = {}
         if self.path == "/voting-power":
-            #post_data = example_req
-            print(post_data)
-            obj = json.loads(post_data)
             response["score"] = []
             for addr in obj['addresses']:
                 response["score"].append( {"address" : addr, "score" : voting_power(addr)} )
         elif self.path == "/mass-delegate":
-            pass
+            num_delegatees, delegator = self.update_mass_delegate(obj)
+            response = { 'status' : 'ok', 'delegator' : delegator, 'number_of_delegatees' : str(num_delegatees)  }
 
         self._set_response()
         self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
