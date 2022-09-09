@@ -5,7 +5,7 @@ Usage::
     ./server.py [<port>]
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import logging, json
+import logging, json, time
 
 import json
 from web3 import Web3
@@ -107,8 +107,18 @@ def balance_of_erc20(addr):
     #print(int_balance)
     return str(int_balance)
 
+# cache
+_balance_of = {}
+
 def voting_power(addr):
-    return str(1)
+    bal = None
+    # use cache only for 2 minutes
+    if addr in _balance_of and time.time() - _balance_of[addr][1] < 120.0: 
+        bal = _balance_of[addr][0]
+    else:
+        bal = balance_of_erc20(addr)
+        _balance_of[addr] = (bal, time.time())
+    return bal
 
 # 1. UserA has 10,000 MINT
 # 2. UserB has 5,000 MINT
@@ -128,6 +138,7 @@ class S(BaseHTTPRequestHandler):
 
     _delegators = {}
     _delegatees = {}
+    _balance_of = {}
 
     def _set_response(self):
         self.send_response(200)
