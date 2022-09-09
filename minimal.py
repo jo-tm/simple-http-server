@@ -191,16 +191,19 @@ class S(BaseHTTPRequestHandler):
 
 
     def get_checkpoint(self, list_obj, block_number):
+        if len(list_obj) == 0:
+            return None
 
         if list_obj[-1]['snapshot'] < block_number:
             return list_obj[-1] #len(list_obj) - 1
-        assert( len(list_obj) > 1 )
+        if len(list_obj) == 1:
+            return None
 
         ret_val = None
         for i in range(len(list_obj)-1):
-            if list_obj[i]['snapshot'] < block_number and list_obj[i+1]['snapshot'] > block_number:
-                ret_val = list_obj[i]
-        assert( ret_val != None)
+            j = len(list_obj) - 2 - i
+            if list_obj[j]['snapshot'] < block_number and list_obj[i+1]['snapshot'] > block_number:
+                ret_val = list_obj[j]
         return ret_val
 
 
@@ -219,13 +222,16 @@ class S(BaseHTTPRequestHandler):
         if is_delegator:
             list_obj = self._delegators[addr]
             checkpoint_obj = self.get_checkpoint(list_obj, block_number)
-            total_weight = int(checkpoint_obj['total_weight'])
-            self_weight = 0
-            dl = [d for d in checkpoint_obj['delegatees'] if addr==d['address']]
-            if len(dl) > 0: # has self mass-delegated weight
-                self_weight = int(dl[0]['weight'])
-            net_balance = self_weight * token_balance // total_weight
-            return net_balance
+            if checkpoint_obj:
+                total_weight = int(checkpoint_obj['total_weight'])
+                self_weight = 0
+                dl = [d for d in checkpoint_obj['delegatees'] if addr==d['address']]
+                if len(dl) > 0: # has self mass-delegated weight
+                    self_weight = int(dl[0]['weight'])
+                net_balance = self_weight * token_balance // total_weight
+                return net_balance
+            else:
+                return token_balance
 
         if is_delegatee:
             delegated_weight = self._delegatees[addr][-1][2]
