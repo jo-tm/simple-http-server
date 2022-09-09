@@ -228,7 +228,6 @@ class S(BaseHTTPRequestHandler):
             return net_balance
 
         if is_delegatee:
-            print('LAST WEIGHT: ' + str(self._delegatees[addr][-1]))
             delegated_weight = self._delegatees[addr][-1][2]
             total_weight = self._delegatees[addr][-1][3]
             delegator = self._delegatees[addr][-1][1]
@@ -249,7 +248,6 @@ class S(BaseHTTPRequestHandler):
         print(post_data)
         obj = json.loads(post_data)
 
-        print("PATH: " + self.path)
         response = {}
         if self.path == "/voting-power":
             response["score"] = []
