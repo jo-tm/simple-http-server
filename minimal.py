@@ -86,18 +86,19 @@ mass_delegate_req = '''
 }
 '''
 
+myabi = '''[{"constant":true,"inputs":[],"name":"mintingFinished","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"mint","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finishMinting","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_releaseTime","type":"uint256"}],"name":"mintTimelocked","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[],"name":"MintFinished","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]'''
+infura_url = "https://rinkeby.infura.io/v3/890b63f3265f4331ae435bef1c0869b8"
+web3 = Web3(Web3.HTTPProvider(infura_url))
+abi=json.loads(myabi)
+# MINT contract
+contract_address = "0xa63C6E2Af9c87768f741E1BB7f77511d23152C7B"
+contract = web3.eth.contract(address=contract_address, abi=abi)
+totalSupply = contract.functions.totalSupply().call()
+#print(totalSupply)
+#print(contract.functions.name().call())
+#print(contract.functions.symbol().call())
+
 def balance_of_erc20(addr):
-    myabi = '''[{"constant":true,"inputs":[],"name":"mintingFinished","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"}],"name":"mint","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"finishMinting","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[{"name":"","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_amount","type":"uint256"},{"name":"_releaseTime","type":"uint256"}],"name":"mintTimelocked","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Mint","type":"event"},{"anonymous":false,"inputs":[],"name":"MintFinished","type":"event"},{"anonymous":false,"inputs":[],"name":"Pause","type":"event"},{"anonymous":false,"inputs":[],"name":"Unpause","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"}]'''
-    infura_url = "https://rinkeby.infura.io/v3/890b63f3265f4331ae435bef1c0869b8"
-    web3 = Web3(Web3.HTTPProvider(infura_url))
-    abi=json.loads(myabi)
-    # MINT contract
-    address = "0xa63C6E2Af9c87768f741E1BB7f77511d23152C7B"
-    contract = web3.eth.contract(address=address, abi=abi)
-    totalSupply = contract.functions.totalSupply().call()
-    #print(totalSupply)
-    #print(contract.functions.name().call())
-    #print(contract.functions.symbol().call())
     address2 = Web3.toChecksumAddress(addr)
     # use getPriorVotes() for BIT token
     # function getPriorVotes(address account, uint256 blockNumber) public view returns (uint256)
@@ -105,7 +106,7 @@ def balance_of_erc20(addr):
     #print(balance)
     int_balance = (balance) // 10**18
     #print(int_balance)
-    return str(int_balance)
+    return int_balance
 
 # cache
 _balance_of = {}
@@ -119,6 +120,7 @@ def voting_power(addr):
         bal = balance_of_erc20(addr)
         _balance_of[addr] = (bal, time.time())
     return bal
+
 
 # 1. UserA has 10,000 MINT
 # 2. UserB has 5,000 MINT
@@ -150,6 +152,17 @@ class S(BaseHTTPRequestHandler):
         self._set_response()
         self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
+
+    def verify_total_weight(self, obj):
+        assert( int(obj['total_weight']) == float(obj['total_weight']) )
+        total = int(obj['total_weight'])
+        sum_w = 0
+        for d in obj['delegatees']:
+            assert( int(d['weight']) == float(d['weight']) )
+            sum_w += int(d['weight'])
+        assert( total == sum_w )
+
+
     def update_mass_delegate(self, obj):
         delegator = obj['delegator']
         block_number = obj["snapshot"]
@@ -160,6 +173,8 @@ class S(BaseHTTPRequestHandler):
             self._delegators[delegator] = []
         else: # prev list
             prev_list = [dic['address'] for dic in self._delegators[delegator][-1]['delegatees'] ]
+        self.verify_total_weight(obj)
+        total_weight = int(obj['total_weight'])
         self._delegators[delegator].append( obj )
 
         for delegatee in obj['delegatees']:
@@ -167,13 +182,62 @@ class S(BaseHTTPRequestHandler):
             if not delegatee_addr in self._delegatees:
                 self._delegatees[delegatee_addr] = []
             # block_number, delegator address, delegatee weight
-            self._delegatees[delegatee_addr].append((block_number,delegator,int(delegatee['weight'])))
+            self._delegatees[delegatee_addr].append((block_number,delegator,int(delegatee['weight']),total_weight))
             num_delegatees += 1
         # missing delegatees from prev list must get zero weight.
         for prev_delegatee in prev_list:
-            self._delegatees[delegatee_addr].append((block_number,delegator,0))
+            self._delegatees[prev_delegatee].append((block_number,delegator,0,total_weight))
         return num_delegatees, delegator
-            
+
+
+    def get_checkpoint(self, list_obj, block_number):
+
+        if list_obj[-1]['snapshot'] < block_number:
+            return list_obj[-1] #len(list_obj) - 1
+        assert( len(list_obj) > 1 )
+
+        ret_val = None
+        for i in range(len(list_obj)-1):
+            if list_obj[i]['snapshot'] < block_number and list_obj[i+1]['snapshot'] > block_number:
+                ret_val = list_obj[i]
+        assert( ret_val != None)
+        return ret_val
+
+
+    def net_voting_power(self, addr, block_number):
+        token_balance = voting_power(addr
+        )
+        # has someone delegated to to addr?
+        is_delegatee = False
+        if addr in self._delegatees: #len(self._delegatees[addr]) > 0: # and self._delegatees[addr][-1][2] > 0:
+            is_delegatee = True
+
+        # is delegator?
+        # is_delegator overrides is_delegatee
+        is_delegator = addr in self._delegators #len(self._delegators[addr]) > 0
+
+        if is_delegator:
+            list_obj = self._delegators[addr]
+            checkpoint_obj = self.get_checkpoint(list_obj, block_number)
+            total_weight = int(checkpoint_obj['total_weight'])
+            self_weight = 0
+            dl = [d for d in checkpoint_obj['delegatees'] if addr==d['address']]
+            if len(dl) > 0: # has self mass-delegated weight
+                self_weight = int(dl[0]['weight'])
+            net_balance = self_weight * token_balance // total_weight
+            return net_balance
+
+        if is_delegatee:
+            print('LAST WEIGHT: ' + str(self._delegatees[addr][-1]))
+            delegated_weight = self._delegatees[addr][-1][2]
+            total_weight = self._delegatees[addr][-1][3]
+            delegator = self._delegatees[addr][-1][1]
+            delegator_balance = voting_power(delegator)
+            # delegatee balance + fraction of delegated balance
+            token_balance += delegated_weight * delegator_balance // total_weight
+        
+        return token_balance
+
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
@@ -189,8 +253,9 @@ class S(BaseHTTPRequestHandler):
         response = {}
         if self.path == "/voting-power":
             response["score"] = []
+            block_number = obj['snapshot']
             for addr in obj['addresses']:
-                response["score"].append( {"address" : addr, "score" : voting_power(addr)} )
+                response["score"].append( {"address" : addr, "score" : self.net_voting_power(addr,block_number)} )
         elif self.path == "/mass-delegate":
             num_delegatees, delegator = self.update_mass_delegate(obj)
             response = { 'status' : 'ok', 'delegator' : delegator, 'number_of_delegatees' : str(num_delegatees)  }
