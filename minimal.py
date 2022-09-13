@@ -5,7 +5,7 @@ Usage::
     ./server.py [<port>]
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import logging, json, time
+import logging, json, time, urllib.parse
 
 import json
 from web3 import Web3
@@ -88,6 +88,39 @@ mass_delegate_req = '''
 }
 '''
 
+example_form = '''<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Mass Delegation - Functional Prototype (Rinkeby)</h1>
+
+<form action="/mass-delegate-form">
+  <p><label for="w3review">Submit to mass-delegate voting power:</label></p>
+  <label for="fname">Delegator address:</label>
+  <input type="text" id="delegator" name="delegator"><br>
+  <em>Note: only comp-delegated voting power can be mass-delegated.</em><br>
+  <br>
+  <label for="fname">Block number:</label>
+  <input type="text" id="blockNumber" name="blockNumber"><br>
+  <em>Note: leave empty for current block number.</em><br><br>
+  <label for="fname">CSV (address,weight):</label><br>
+  <textarea id="delegatees" name="delegatees" rows="32" cols="50">
+0x287c1b65992aAC3Ff67aDE9FeB9F3A73289E7277,5
+0x4F6b3B68Fde374aA0B14967E52CF3443Af5Dd3a5,3
+0xA78905e37CE42CE51D906b7A277363993Abb4598,2
+  </textarea>
+  <br>
+  <input type="submit" value="Submit">
+</form>
+
+<p>
+<b>WARNING: just for validation and exploration, Not A Production Ready Implementation!</b>
+</p>
+
+</body>
+</html>
+'''
+
 myabi = '''[{"inputs":[{"internalType":"address","name":"_admin","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"delegator","type":"address"},{"indexed":true,"internalType":"address","name":"fromDelegate","type":"address"},{"indexed":true,"internalType":"address","name":"toDelegate","type":"address"}],"name":"DelegateChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"delegate","type":"address"},{"indexed":false,"internalType":"uint256","name":"previousBalance","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newBalance","type":"uint256"}],"name":"DelegateVotesChanged","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldAdmin","type":"address"},{"indexed":true,"internalType":"address","name":"newAdmin","type":"address"}],"name":"NewAdmin","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldPendingAdmin","type":"address"},{"indexed":true,"internalType":"address","name":"newPendingAdmin","type":"address"}],"name":"NewPendingAdmin","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"id","type":"uint256"}],"name":"Snapshot","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"DELEGATION_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DOMAIN_TYPEHASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_SUPPLY","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"acceptAdmin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"admin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"snapshotId","type":"uint256"}],"name":"balanceOfAt","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"checkpoints","outputs":[{"internalType":"uint256","name":"fromBlock","type":"uint256"},{"internalType":"uint256","name":"votes","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"delegatee","type":"address"}],"name":"delegate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"delegatee","type":"address"},{"internalType":"uint256","name":"nonce","type":"uint256"},{"internalType":"uint256","name":"expiry","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"delegateBySig","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"delegates","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"getCurrentVotes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"blockNumber","type":"uint256"}],"name":"getPriorVotes","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"nonces","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"numCheckpoints","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pendingAdmin","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newPendingAdmin","type":"address"}],"name":"setPendingAdmin","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"snapshot","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"snapshotId","type":"uint256"}],"name":"totalSupplyAt","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]'''
 infura_url = "https://rinkeby.infura.io/v3/890b63f3265f4331ae435bef1c0869b8"
 web3 = Web3(Web3.HTTPProvider(infura_url))
@@ -95,19 +128,16 @@ abi=json.loads(myabi)
 # MINT contract
 contract_address = "0xCB198597184804f175Dc7b562b0b5AF0793e9176"
 contract = web3.eth.contract(address=contract_address, abi=abi)
-#totalSupply = contract.functions.totalSupply().call()
-#print(totalSupply)
-#print(contract.functions.name().call())
-#print(contract.functions.symbol().call())
+
+def current_block_number():
+    return int(web3.eth.block_number)
 
 def balance_of_erc20(addr):
     address2 = Web3.toChecksumAddress(addr)
     # use getPriorVotes() for BIT token
     # function getPriorVotes(address account, uint256 blockNumber) public view returns (uint256)
     balance = contract.functions.balanceOf(address2).call()
-    #print(balance)
     int_balance = (balance) // 10**18
-    #print(int_balance)
     return int_balance
 
 def delegated_votes_prior(addr, block_number):
@@ -115,9 +145,7 @@ def delegated_votes_prior(addr, block_number):
     # use getPriorVotes() for BIT token
     # function getPriorVotes(address account, uint256 blockNumber) public view returns (uint256)
     votes = contract.functions.getPriorVotes(addr, block_number ).call()
-    #print(balance)
     int_votes = (votes) // 10**18
-    #print(int_balance)
     return int_votes
 
 # cache
@@ -147,6 +175,10 @@ def voting_power(addr, block_number):
 # 8. UserA make a proposal PropC.
 # 9. UserA votes YES and UserB votes NO on PropA. Win YES.
 
+0x287c1b65992aAC3Ff67aDE9FeB9F3A73289E7277,5
+0x4F6b3B68Fde374aA0B14967E52CF3443Af5Dd3a5,3
+0xA78905e37CE42CE51D906b7A277363993Abb4598,2
+
 
 class S(BaseHTTPRequestHandler):
 
@@ -162,7 +194,38 @@ class S(BaseHTTPRequestHandler):
     def do_GET(self):
         logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
         self._set_response()
-        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
+        self.wfile.write(example_form.encode('utf-8'))
+        path_s = self.path.split('?')
+        if path_s[0] == '/mass-delegate-form': # do mass-delegate
+            # url decode form in the path
+            # ?delegator=0x666&blockNumber=12345&delegatees=0xcafecafeafe%2C6%0D%0A0xaaaaaaaaaaa%2C4
+            url_str = '?'.join(path_s[1:])
+            print('URL STR: ' + url_str)
+            obj = urllib.parse.parse_qs(url_str)
+            print(obj)
+            assert( 'delegator' in obj )
+            assert( len(obj['delegator']) == 1 )
+            obj['delegator'] = obj['delegator'][0]
+            if not 'blockNumber' in obj or len(obj['blockNumber']) == 0 or obj['blockNumber'] == ['']:
+                obj['snapshot'] = current_block_number()
+            else:
+                obj['snapshot'] = int(obj['blockNumber'][0])
+            assert( len(obj['delegatees']) == 1 )
+            total_weight = 0
+            delegatees = []
+            for delegatee_l in obj['delegatees'][0].strip().split('\n'):
+                delegatee_l = delegatee_l.strip()
+                ds_s = delegatee_l.split(',')
+                assert( len(ds_s) == 2)
+                total_weight += int(ds_s[1])
+                assert( int(ds_s[1]) > 0)
+                d_dict = {'address':ds_s[0], 'weight': str(ds_s[1]) }
+                delegatees.append( d_dict )
+            obj['delegatees'] = delegatees
+            obj['total_weight'] = str(total_weight)
+            # Execute
+            self.update_mass_delegate(obj)
+        #self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
 
 
     def verify_total_weight(self, obj):
@@ -177,7 +240,10 @@ class S(BaseHTTPRequestHandler):
 
     def update_mass_delegate(self, obj):
         delegator = obj['delegator']
-        block_number = obj["snapshot"]
+        if not 'snapshot' in obj:
+            block_number = current_block_number()
+        else:
+            block_number = obj['snapshot']
         #TODO: check signature from permit, signer=delegator
         prev_list = []
         num_delegatees = 0
@@ -199,7 +265,7 @@ class S(BaseHTTPRequestHandler):
         # missing delegatees from prev list must get zero weight.
         for prev_delegatee in prev_list:
             self._delegatees[prev_delegatee].append((block_number,delegator,0,total_weight))
-        return num_delegatees, delegator
+        return num_delegatees, delegator, block_number
 
 
     def get_checkpoint(self, list_obj, block_number):
@@ -268,13 +334,16 @@ class S(BaseHTTPRequestHandler):
         response = {}
         if self.path == "/voting-power":
             response["score"] = []
-            block_number = obj['snapshot']
+            if not 'snapshot' in obj:
+                block_number = current_block_number()
+            else:
+                block_number = obj['snapshot']
             for addr in obj['addresses']:
                 response["score"].append( {"address" : addr, "score" : self.net_voting_power(addr,block_number)} )
         elif self.path == "/mass-delegate":
             obj = obj['content']
-            num_delegatees, delegator = self.update_mass_delegate(obj)
-            response = { 'status' : 'ok', 'delegator' : delegator, 'number_of_delegatees' : str(num_delegatees)  }
+            num_delegatees, delegator, block_number = self.update_mass_delegate(obj)
+            response = { 'status' : 'ok', 'block_number': int(block_number), 'delegator' : delegator, 'number_of_delegatees' : str(num_delegatees)  }
 
         self._set_response()
         self.wfile.write(json.dumps(response, indent=4).encode('utf-8'))
