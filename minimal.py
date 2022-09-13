@@ -97,6 +97,8 @@ example_form = '''<!DOCTYPE html>
 <p>Using COMP-like Rinkeby Test Token TBIT
 (<a href="https://rinkeby.etherscan.io/address/0xcb198597184804f175dc7b562b0b5af0793e9176#writeContract">Execute test token TBIT comp-delegation and unrestricted minting here</a>)</p>
 <p>Test mass-delegated TBIT on Snapshot (<a href="https://demo.snapshot.org/#/playground/api-post?query=eyJwYXJhbXMiOnsiYXBpIjoiaHR0cDovLzM0LjIyMC4xMTguMjE6ODAwMC92b3RpbmctcG93ZXIiLCJzeW1ib2wiOiJUQklUIiwiZGVjaW1hbHMiOjB9LCJuZXR3b3JrIjoiNCIsInNuYXBzaG90IjoiIiwiYWRkcmVzc2VzIjpbIjB4RUEyRTljRWNERkY4YmJmRjEwN2EzNDlhREI5QWQwYmQ3YjA4YTdCNyIsIjB4M2M0QjhDNTJFZDRjMjllRTQwMkQ5YzkxRmZBZTFEYjJCQWRkMjI4RCIsIjB4ZDY0OWJBQ2ZGNjZmMUM4NTYxOGM1Mzc2ZWU0RjM4ZTQzZUU1M2I2MyIsIjB4NzI2MDIyYTlmZTEzMjJmQTk1OTBGQjI0NGI4MTY0OTM2YkIwMDQ4OSIsIjB4YzY2NjVlYjM5ZDIxMDZmYjFEQkU1NGJmMTkxOTBGODJGRDUzNWMxOSIsIjB4NmVmMjM3NmZhNmUxMmRhYmIzYTNlZDBmYjQ0ZTRmZjI5ODQ3YWY2OCJdfQ..">Demo Snapshot Voting Power playground for TBIT here</a>)</p>
+<p>Create new Test Proposals (<a href="https://demo.snapshot.org/#/bitdao-test.eth/">Demo Snapshot Proposals Homepage here</a>)</p>
+
 
 
 <form action="/mass-delegate-form">
