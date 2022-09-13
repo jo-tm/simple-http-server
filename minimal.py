@@ -170,7 +170,7 @@ class S(BaseHTTPRequestHandler):
         total = int(obj['total_weight'])
         sum_w = 0
         for d in obj['delegatees']:
-            assert( int(d['weight']) == float(d['weight']) )
+            assert( int(d['weight']) > 0 and int(d['weight']) == float(d['weight']) )
             sum_w += int(d['weight'])
         assert( total == sum_w )
 
