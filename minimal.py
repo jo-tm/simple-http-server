@@ -165,7 +165,7 @@ def voting_power(addr, block_number):
     if addr in _balance_of and time.time() - _balance_of[addr][1] < 15.0: 
         bal = _balance_of[addr][0]
     else:
-        bal = delegated_votes_prior(addr, block_number)
+        bal = delegated_votes_prior(addr, int(block_number))
         _balance_of[addr] = (bal, time.time())
     return bal
 
